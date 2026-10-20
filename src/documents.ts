@@ -95,6 +95,7 @@ export function splitMarkdown(md: string, splitOn: readonly string[] = ['h2', 'h
 function truncate(text: string, max: number | undefined): string {
   if (!max || text.length <= max) return text;
   const cut = text.slice(0, max);
+  if (text[max] === ' ') return cut;
   const space = cut.lastIndexOf(' ');
   return space > max * 0.6 ? cut.slice(0, space) : cut;
 }

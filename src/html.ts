@@ -241,6 +241,9 @@ export function extractHtml(html: string, options: ExtractOptions = {}): Extract
   }
   if (heading) current.parts.push(' ', ...heading.parts);
   flush();
+  // An introduction holding nothing but the h1 repeats the title: leave it out.
+  const h1 = clean(firstH1);
+  if (sections[0] && !sections[0].heading && h1 && sections[0].text === h1) sections.shift();
 
-  return { title: title || clean(firstH1), indexable, sections };
+  return { title: title || h1, indexable, sections };
 }

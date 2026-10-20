@@ -85,3 +85,10 @@ describe('extractHtml', () => {
     expect(p.sections[0]!.text).toBe('One Two Three Four Five');
   });
 });
+
+describe('extractHtml introductions', () => {
+  it('leaves out an introduction that is only the h1', () => {
+    const p = extractHtml(page('<main><h1>About</h1><h2 id="team">Team</h2><p>Small.</p></main>'));
+    expect(p.sections).toEqual([{ heading: 'Team', anchor: 'team', text: 'Small.' }]);
+  });
+});
