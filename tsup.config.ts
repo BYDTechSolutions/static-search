@@ -1,5 +1,7 @@
 import { defineConfig } from 'tsup';
 
+// Both builds write into dist/ at once, so neither cleans it: `npm run build` empties it first.
+
 export default defineConfig([
   {
     // The library: the browser runtime, the Node build API, the element and the CLI.
@@ -9,7 +11,8 @@ export default defineConfig([
     platform: 'neutral',
     external: [/^node:/],
     dts: { entry: { index: 'src/index.ts', build: 'src/build.ts', element: 'src/element.ts' } },
-    clean: true,
+    removeNodeProtocol: false,
+    clean: false,
     sourcemap: false,
     splitting: true,
   },
