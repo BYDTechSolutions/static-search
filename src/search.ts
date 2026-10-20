@@ -57,11 +57,6 @@ export interface Search {
   readonly chunkCount: number;
 }
 
-interface Doc {
-  page: number;
-  len: number;
-}
-
 const MAX_EXPANSIONS = 50;
 const PREFIX_WEIGHT = 0.9;
 
@@ -80,30 +75,27 @@ export function createSearch(data: SearchIndexData, options: SearchOptions = {})
   const defaults = { limit: options.limit ?? 10, perPage: options.perPage ?? 2, prefix: options.prefix ?? true };
   const snippetLength = options.snippetLength ?? 160;
 
-  // Inverted index: term -> [doc, weighted term frequency, doc, tf, ...].
+  // BM25F: each field's term counts are normalized by that field's length
+  // before weighting, so a short section does not win on the page title alone.
+  // The result depends only on the index, so it is computed once here, and the
+  // inverted index stores it: term -> [doc, weighted tf, doc, weighted tf, ...].
+  const fields = data.chunks.map((c) => [terms(data.pages[c.page]?.title ?? '', analyzer), terms(c.section ?? '', analyzer), terms(c.text, analyzer)]);
+  const weights = [w.title, w.section, w.body];
+  const avg = [0, 1, 2].map((f) => fields.reduce((sum, d) => sum + d[f]!.length, 0) / Math.max(1, fields.length) || 1);
   const postings = new Map<string, number[]>();
-  const pageTerms = data.pages.map((p) => terms(p.title, analyzer));
-  let total = 0;
-  const docs: Doc[] = data.chunks.map((c, i) => {
+  fields.forEach((d, i) => {
     const tf = new Map<string, number>();
-    const add = (list: string[], weight: number) => {
-      for (const t of list) tf.set(t, (tf.get(t) ?? 0) + weight);
-    };
-    add(pageTerms[c.page] ?? [], w.title);
-    add(terms(c.section ?? '', analyzer), w.section);
-    add(terms(c.text, analyzer), w.body);
-    let len = 0;
+    d.forEach((list, f) => {
+      const norm = weights[f]! / (1 - b + (b * list.length) / avg[f]!);
+      for (const t of list) tf.set(t, (tf.get(t) ?? 0) + norm);
+    });
     for (const [t, f] of tf) {
-      len += f;
       let list = postings.get(t);
       if (!list) postings.set(t, (list = []));
       list.push(i, f);
     }
-    total += len;
-    return { page: c.page, len };
   });
-  const avgLen = total / Math.max(1, docs.length) || 1;
-  const n = docs.length;
+  const n = fields.length;
   let vocab: string[] | undefined;
 
   /** Indexed terms that start with `prefix`, most common first. */
@@ -158,7 +150,7 @@ export function createSearch(data: SearchIndexData, options: SearchOptions = {})
         for (let j = 0; j < list.length; j += 2) {
           const d = list[j]!;
           const f = list[j + 1]!;
-          const s = weight * idf * ((f * (k1 + 1)) / (f + k1 * (1 - b + (b * docs[d]!.len) / avgLen)));
+          const s = (weight * idf * (f * (k1 + 1))) / (f + k1);
           if (s > (best.get(d) ?? 0)) best.set(d, s);
         }
       }
@@ -176,6 +168,7 @@ export function createSearch(data: SearchIndexData, options: SearchOptions = {})
         ranked.push(d);
       }
     }
+    // Stable: equal scores keep page order, so a page's introduction comes first.
     ranked.sort((x, y) => score[y]! - score[x]!);
 
     const isMatch = (word: string): boolean => {
@@ -204,7 +197,7 @@ export function createSearch(data: SearchIndexData, options: SearchOptions = {})
     return out;
   }
 
-  return { query, pageCount: data.pages.length, chunkCount: docs.length };
+  return { query, pageCount: data.pages.length, chunkCount: n };
 }
 
 /** An excerpt of `text` around the densest run of matching words. */

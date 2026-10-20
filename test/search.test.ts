@@ -36,6 +36,20 @@ describe('createSearch', () => {
     expect(search.query('password', { perPage: 4 }).filter((r) => r.pageUrl === '/guide')).toHaveLength(4);
   });
 
+  it('does not let a short section win on the page title alone', () => {
+    const data = buildIndex([
+      {
+        url: '/rejections',
+        title: 'App store rejection reasons',
+        sections: [
+          { text: 'Why apps get turned down in review, and how to fix each reason before you submit again.' },
+          { heading: 'Sources', anchor: 'sources', text: 'Official guidelines.' },
+        ],
+      },
+    ]);
+    expect(createSearch(data).query('app store rejection')[0]!.url).toBe('/rejections');
+  });
+
   it('links to the section anchor', () => {
     const r = search.query('invoices pdf')[0]!;
     expect(r).toMatchObject({ url: '/billing#invoices', pageUrl: '/billing', title: 'Billing', section: 'Invoices' });
