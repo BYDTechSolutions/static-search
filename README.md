@@ -28,10 +28,10 @@ That writes `dist/search-index.json` and `dist/static-search.js`. Put a search b
 
 Done. Results link to the section that matched (`/docs/account#reset-password`), with the matching words highlighted.
 
-To build your own UI instead, use the headless API (with a bundler):
+To build your own UI instead, use the headless API. With a bundler, import it from the package; without one, the same functions come from the script the build wrote:
 
 ```js
-import { loadSearch } from '@bydtech/static-search';
+import { loadSearch } from '@bydtech/static-search'; // or: from '/static-search.js'
 
 const search = await loadSearch('/search-index.json');
 const results = search.query('reset password');
@@ -118,7 +118,7 @@ Its built-in styles have zero specificity, so any rule of yours wins. Or set the
 
 After each search it fires a `results` event with `{ query, results }` in `detail`, and `el.run('text')` searches from code.
 
-Without a bundler, the CLI's copy of `static-search.js` is all you need. With one, `import '@bydtech/static-search/element'`.
+Without a bundler, the CLI's copy of `static-search.js` is all you need; it also exports `loadSearch`, `createSearch` and `highlight`. With a bundler, `import '@bydtech/static-search/element'`.
 
 ## CLI reference
 
@@ -227,7 +227,7 @@ Checked on 2026-10-21. Sizes are the main import bundled with esbuild `--minify`
 
 | | Indexes | Runtime (min+gzip) | Index in the browser |
 |---|---|---|---|
-| **@bydtech/static-search** 0.1.0 | built HTML, or your documents | 2.5 kB (4.0 kB with the element) | one JSON file, loaded whole |
+| **@bydtech/static-search** 0.1.0 | built HTML, or your documents | 2.5 kB (4.3 kB with the element) | one JSON file, loaded whole |
 | [Pagefind](https://pagefind.app) 1.5.2 | built HTML | not measured | split into fragments, loaded per query |
 | [MiniSearch](https://github.com/lucaong/minisearch) 7.2.0 | your documents | 5.9 kB | you load and add documents |
 | [Lunr](https://lunrjs.com) 2.3.9 | your documents | 8.9 kB | prebuilt index or documents |

@@ -128,7 +128,10 @@ export function stripCommonTitleSuffix(titles: string[]): string[] {
   let suffix = '';
   let best = 0;
   for (const [s, n] of counts) if (n > best) [suffix, best] = [s, n];
-  if (best < 2 || best < titles.length / 2) return titles;
+  // A title that is only the site name ("Acme Docs" on the home page) supports the suffix too.
+  const name = SEPARATORS.reduce((rest, sep) => (rest.startsWith(sep) ? rest.slice(sep.length) : rest), suffix);
+  const support = best + titles.filter((t) => t === name).length;
+  if (best < 1 || support < 2 || support < titles.length / 2) return titles;
   return titles.map((t) => (t.endsWith(suffix) && t.length > suffix.length ? t.slice(0, -suffix.length).trim() : t));
 }
 

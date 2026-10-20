@@ -87,5 +87,6 @@ describe('element module outside a browser', () => {
   it('can be imported in Node without a DOM', async () => {
     const mod = await import('../src/element.js');
     expect(typeof mod.defineStaticSearch).toBe('function');
+    expect(typeof mod.loadSearch).toBe('function');
   });
 });

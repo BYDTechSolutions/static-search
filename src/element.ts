@@ -9,6 +9,10 @@
  * Styling: CSS variables listed in STYLE, or your own CSS (its specificity is zero).
  */
 import { loadSearch, type Search } from './search.js';
+
+// The headless API, so a page without a bundler can import it from the same file:
+//   import { loadSearch } from '/static-search.js';
+export { createSearch, highlight, loadSearch } from './search.js';
 import type { SearchResult } from './types.js';
 
 const STYLE = `

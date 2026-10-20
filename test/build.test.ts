@@ -28,6 +28,8 @@ describe('stripCommonTitleSuffix', () => {
   it('removes a suffix most titles share', () => {
     expect(stripCommonTitleSuffix(['Install | Acme', 'Config | Acme', 'Acme'])).toEqual(['Install', 'Config', 'Acme']);
     expect(stripCommonTitleSuffix(['A - one', 'B - two', 'C'])).toEqual(['A - one', 'B - two', 'C']);
+    expect(stripCommonTitleSuffix(['Billing - Acme Notes', 'Acme Notes'])).toEqual(['Billing', 'Acme Notes']);
+    expect(stripCommonTitleSuffix(['Billing - Acme Notes', 'Home'])).toEqual(['Billing - Acme Notes', 'Home']);
   });
 });
 
