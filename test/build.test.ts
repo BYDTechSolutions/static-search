@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildFromDirectory, fileToUrl, globToRegExp, stripCommonTitleSuffix } from '../src/build.js';
+import { buildFromDirectory, fileToUrl, globToRegExp, prefersCleanUrls, stripCommonTitleSuffix } from '../src/build.js';
 import { html, site } from './helpers.js';
 
 describe('fileToUrl', () => {
@@ -66,5 +66,30 @@ describe('buildFromDirectory', () => {
     const { data } = await buildFromDirectory(dir, { exclude: ['tags/**'], baseUrl: '/docs', maxChunkLength: 60 });
     expect(data.pages).toEqual([{ url: '/docs/a', title: 'A' }]);
     expect(data.chunks[0]!.text.length).toBeLessThanOrEqual(60);
+  });
+});
+
+describe('clean URL detection', () => {
+  it('follows how the site links to its own pages', () => {
+    const pages = (href: string) => [
+      { file: 'index.html', html: `<a href="${href}">Billing</a> <a href="https://other.dev/x.html">x</a>` },
+      { file: 'docs/billing.html', html: '<a href="../index.html">Home</a>' },
+    ];
+    expect(prefersCleanUrls(pages('/docs/billing.html'))).toBe(false);
+    expect(prefersCleanUrls(pages('docs/billing.html#refunds'))).toBe(false);
+    expect(prefersCleanUrls(pages('/docs/billing'))).toBe(true);
+    expect(prefersCleanUrls(pages('/elsewhere'))).toBe(true);
+  });
+
+  it('keeps .html in URLs for a site that links that way, unless told otherwise', async () => {
+    const dir = await site({
+      'index.html': html('Home', '<p>See <a href="guide.html">the guide</a>.</p>'),
+      'guide.html': html('Guide', '<p>Step one.</p>'),
+    });
+    const auto = await buildFromDirectory(dir);
+    expect(auto.cleanUrls).toBe(false);
+    expect(auto.data.pages.map((p) => p.url)).toEqual(['/guide.html', '/']);
+    const forced = await buildFromDirectory(dir, { cleanUrls: true });
+    expect(forced.data.pages.map((p) => p.url)).toEqual(['/guide', '/']);
   });
 });

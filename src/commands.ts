@@ -31,7 +31,9 @@ Build options:
   --exclude <glob>             skip matching files; repeatable (default: 404.html, 500.html)
   --split <tags>               headings that start a section (default: h2,h3)
   --max-chunk-length <chars>   cut each section's text to about this length
-  --keep-extensions            keep .html in URLs (default: about.html -> /about)
+  --clean-urls                 link to /about, not /about.html
+  --keep-extensions            link to /about.html, not /about
+                               (default: whichever form the site's own links use)
   --no-ui                      do not copy static-search.js next to the index
   -v, --verbose                list skipped files
   -q, --quiet                  print nothing but errors
@@ -89,6 +91,7 @@ async function build(args: string[], io: Io): Promise<number> {
       split: { type: 'string' },
       'max-chunk-length': { type: 'string' },
       'keep-extensions': { type: 'boolean' },
+      'clean-urls': { type: 'boolean' },
       'no-ui': { type: 'boolean' },
       verbose: { type: 'boolean', short: 'v' },
       quiet: { type: 'boolean', short: 'q' },
@@ -115,12 +118,13 @@ async function build(args: string[], io: Io): Promise<number> {
   if (splitOn && !splitOn.every((s) => /^h[1-6]$/.test(s))) throw new UsageError('--split takes heading tags, e.g. h2,h3');
 
   const log = values.quiet ? () => {} : io.out;
-  const { data, files, skipped } = await buildFromDirectory(dir, {
+  if (values['keep-extensions'] && values['clean-urls']) throw new UsageError('use --clean-urls or --keep-extensions, not both');
+  const { data, files, skipped, cleanUrls } = await buildFromDirectory(dir, {
     ...(values['base-url'] ? { baseUrl: values['base-url'] } : {}),
     ...(values.exclude ? { exclude: values.exclude } : {}),
     ...(splitOn ? { splitOn } : {}),
     ...(maxChunkLength ? { maxChunkLength } : {}),
-    cleanUrls: !values['keep-extensions'],
+    cleanUrls: values['keep-extensions'] ? false : values['clean-urls'] ? true : 'auto',
   });
   const shown = show(dir);
   if (!data.pages.length) {
@@ -139,6 +143,7 @@ async function build(args: string[], io: Io): Promise<number> {
   const gz = gzipSync(json).length;
   log(`static-search: indexed ${data.pages.length} pages, ${data.chunks.length} sections from ${shown}`);
   log(`  wrote ${show(out)} (${kb(raw)}, ${kb(gz)} gzipped)`);
+  log(`  URLs look like ${data.pages.find((p) => !p.url.endsWith('/'))?.url ?? data.pages[0]!.url}${cleanUrls ? '' : ' (kept .html to match the site links)'}`);
 
   if (!values['no-ui']) {
     const script = io.uiScript ?? fileURLToPath(new URL('./static-search.js', import.meta.url));

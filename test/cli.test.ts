@@ -56,6 +56,7 @@ describe('cli', () => {
     expect((await run(['build', '.', '--max-chunk-length', 'ten'])).code).toBe(2);
     expect((await run(['build', '.', '--split', 'p'])).code).toBe(2);
     expect((await run(['query', 'index.json'])).code).toBe(2);
+    expect((await run(['build', '.', '--clean-urls', '--keep-extensions'])).code).toBe(2);
   });
 
   it('warns when the index is large', async () => {

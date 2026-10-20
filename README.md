@@ -134,7 +134,7 @@ static-search query <index> <words...>  try a query from the terminal
 | `--exclude <glob>` | `404.html`, `500.html`, `404/index.html` | skip matching files; repeatable. A pattern without `/` matches a file name at any depth; `*` stays in one folder, `**` crosses folders |
 | `--split <tags>` | `h2,h3` | headings that start a new section |
 | `--max-chunk-length <chars>` | no limit | cut each section's stored text to about this length |
-| `--keep-extensions` | off | keep `.html` in URLs (default: `about.html` → `/about`, `docs/index.html` → `/docs/`) |
+| `--clean-urls` / `--keep-extensions` | auto | link results to `/about` or to `/about.html`. By default the build follows the site's own links: if its pages link to each other with `.html`, results do too, so they work on any static server; otherwise `.html` is dropped, as Next.js, Astro and most hosts expect. `docs/index.html` is always `/docs/` |
 | `--no-ui` | off | do not copy `static-search.js` next to the index |
 | `-v, --verbose` | off | list skipped files |
 | `-q, --quiet` | off | print only errors |
@@ -178,11 +178,11 @@ Each result is `{ url, pageUrl, title, section, snippet, highlights, score }`: `
 
 | Export | What it does |
 |---|---|
-| `buildFromDirectory(dir, options?)` | What the CLI does. Returns `{ data, files, skipped }`; save `data` with `JSON.stringify`. |
+| `buildFromDirectory(dir, options?)` | What the CLI does. Returns `{ data, files, skipped, cleanUrls }`; save `data` with `JSON.stringify`. |
 | `buildIndex(documents, options?)` | Index data from documents you already have (below). Works anywhere. |
 | `extractHtml(html, options?)` | One page's `{ title, indexable, sections }`. |
 | `splitMarkdown(md)`, `markdownToText(md)`, `slugify(heading)` | The Markdown helpers `buildIndex` uses. |
-| `fileToUrl(file, options?)`, `globToRegExp(glob)` | URL and glob rules the CLI uses. |
+| `fileToUrl(file, options?)`, `prefersCleanUrls(pages)`, `globToRegExp(glob)` | URL and glob rules the CLI uses. |
 
 ### Markdown, JSON or a CMS
 
@@ -217,7 +217,7 @@ Search options, for `loadSearch` and `createSearch`:
 | `snippetLength` | `160` | approximate snippet length in characters |
 | `k1`, `b` | `1.2`, `0.75` | BM25 parameters |
 
-Build options (`buildFromDirectory`, `buildIndex`, `extractHtml`): `splitOn` (`['h2', 'h3']`), `ignore` (the element list above), `maxChunkLength`, and for folders `baseUrl`, `exclude`, `cleanUrls` (`true`), `stripTitleSuffix` (`true`).
+Build options (`buildFromDirectory`, `buildIndex`, `extractHtml`): `splitOn` (`['h2', 'h3']`), `ignore` (the element list above), `maxChunkLength`, and for folders `baseUrl`, `exclude`, `cleanUrls` (`'auto'`), `stripTitleSuffix` (`true`).
 
 All text analysis runs in the browser when the index loads, so changing search options never needs a rebuild.
 
