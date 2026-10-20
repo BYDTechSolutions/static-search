@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Home | Example Docs</title>
+    <!-- Written next to the index by `npx static-search build examples/plain-html` -->
+    <script type="module" src="/static-search.js"></script>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; }
+      static-search { --static-search-mark: #ffe08a; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav><a href="/">Home</a> <a href="/guides/install">Install</a> <a href="/about">About</a></nav>
+      <static-search placeholder="Search the docs"></static-search>
+    </header>
+    <main>
+      <h1>Example Docs</h1>
+      <p>A tiny static site to try static-search on. Type "install", "password" or "team" in the box above.</p>
+      <h2 id="features">Features</h2>
+      <p>Search runs in the browser. Nothing is sent to a server.</p>
+    </main>
+    <footer>Footer text is not indexed.</footer>
+  </body>
+</html>

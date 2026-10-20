@@ -1,0 +1,18 @@
+---
+/*
+ * Astro: drop this component anywhere. Astro bundles the <script> for the browser.
+ *   "build": "astro build && static-search build dist"
+ */
+---
+<static-search src="/search-index.json" placeholder="Search"></static-search>
+
+<script>
+  import '@bydtech/static-search/element';
+</script>
+
+<style is:global>
+  static-search {
+    --static-search-border: var(--gray-300, #ccc);
+    --static-search-mark: #fde68a;
+  }
+</style>
