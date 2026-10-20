@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `static-search build <dir>`: index a folder of built HTML into `search-index.json`, split into sections at `h2`/`h3` with anchors; prefers `data-search-body`, `<main>`, `<article>`; drops page chrome and `data-search-ignore`; skips `noindex` and redirect pages; reports the index size and warns above 300 kB gzipped; copies the browser script next to the index.
+- `static-search build <dir>`: index a folder of built HTML into `search-index.json`, split into sections at `h2`/`h3` with anchors; prefers `data-search-body`, `<main>`, `<article>`; drops page chrome and `data-search-ignore`; skips `noindex` and redirect pages; writes `/about` or `/about.html` URLs to match the site's own links; reports the index size and warns above 300 kB gzipped; copies the browser script next to the index.
 - `static-search query <index> <words...>`: try a query from the terminal.
 - Browser runtime: `loadSearch`, `createSearch`, `highlight`, with BM25 field weights, prefix matching for the last word, a per-page result cap, accent folding, a light English suffix stripper and configurable stop words.
 - `<static-search>` element: a keyboard-friendly search box with results, styled through CSS variables.
