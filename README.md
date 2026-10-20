@@ -227,7 +227,7 @@ Checked on 2026-10-21. Sizes are the main import bundled with esbuild `--minify`
 
 | | Indexes | Runtime (min+gzip) | Index in the browser |
 |---|---|---|---|
-| **@bydtech/static-search** 0.1.0 | built HTML, or your documents | 2.5 kB (4.3 kB with the element) | one JSON file, loaded whole |
+| **@bydtech/static-search** 0.1.1 | built HTML, or your documents | 2.5 kB (4.3 kB with the element) | one JSON file, loaded whole |
 | [Pagefind](https://pagefind.app) 1.5.2 | built HTML | not measured | split into fragments, loaded per query |
 | [MiniSearch](https://github.com/lucaong/minisearch) 7.2.0 | your documents | 5.9 kB | you load and add documents |
 | [Lunr](https://lunrjs.com) 2.3.9 | your documents | 8.9 kB | prebuilt index or documents |

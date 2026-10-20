@@ -1,6 +1,6 @@
 {
   "name": "@bydtech/static-search",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Full-text search for static sites: one build command over your HTML, a tiny browser runtime, and an optional drop-in <static-search> element.",
   "keywords": [
     "search",

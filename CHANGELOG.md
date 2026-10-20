@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-21
+
+### Changed
+
+- Published from GitHub Actions through npm trusted publishing, with a
+  provenance attestation linking the package to this repository. No code changes.
+
 ## [0.1.0] - 2026-10-21
 
 ### Added
@@ -17,5 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `<static-search>` element: a keyboard-friendly search box with results, styled through CSS variables.
 - Build API: `buildFromDirectory`, `buildIndex` (text, Markdown, HTML or sections), `extractHtml`, Markdown helpers.
 
-[Unreleased]: https://github.com/BYDTechSolutions/static-search/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/BYDTechSolutions/static-search/releases/tag/v0.1.0
+[Unreleased]: https://github.com/BYDTechSolutions/static-search/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/BYDTechSolutions/static-search/releases/tag/v0.1.1
+[0.1.0]: https://github.com/BYDTechSolutions/static-search/tree/beb05d99d228c25ad7f880ac5935e13ed6651add
